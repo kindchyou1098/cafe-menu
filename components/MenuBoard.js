@@ -1,0 +1,52 @@
+'use client'
+
+import { useState } from "react"
+import MenuCard from "./MenuCard";
+
+const categories = [
+  { key: 'all', label: '전체'},
+  { key: 'coffee', label: '☕ 커피' },
+  { key: 'drink', label: '🧃 음료' },
+  { key: 'dessert', label: '🍪 디저트' },
+  { key: 'bakery', label: '🍞 베이커리' },
+]
+
+export default function MenuBoard({ menus }) {
+  const [keyword, setKeyword] = useState('');
+  const [category, setCategory] = useState('all');
+  const filtered = menus
+    .filter(menu => category === 'all' ? true : menu.category === category)
+    .filter(menu => menu.name.includes(keyword.trim()));
+
+  return (
+    <section>
+      <input 
+        className="search"
+        type="text" 
+        placeholder="메뉴 이름을 입력하세요" 
+        value={keyword} 
+        onChange={(e) => setKeyword(e.target.value)}
+      />
+      <div className="tabs">
+        {categories.map(cat => 
+          <button 
+            key={cat.key} 
+            className={cat.key === category ? "tab active" : "tab"}
+            onClick={() => setCategory(cat.key)}
+          >
+            {cat.label}
+          </button>
+        )}
+      </div>
+      <p>검색 결과 {filtered.length}개</p>
+      { filtered.length === 0 ?
+        <p className="empty">"{keyword}"에 해당하는 메뉴가 없습니다</p> :
+        <div className="menu-grid">
+          {filtered.map(menu => 
+            <MenuCard key={menu.id} {...menu}/>
+          )}
+        </div>
+      }
+    </section>
+  )
+}
